@@ -4,7 +4,8 @@ import { hashPassword } from "./utils/encryptPass.js";
 $("#add-account").on("submit", function (event) {
   event.preventDefault();
   const username = $("#username").val();
-  let password = $("#password").val(); // Get the password from the form
+  let password = $("#password").val(); 
+  // hashing the password to add it in the register
   hashPassword(password).then(hash => {
     console.log(hash);
   });
@@ -26,17 +27,18 @@ $("#add-account").on("submit", function (event) {
   };
 
   addAccount(username, password);
-  $("#username").val("");
-  $("#password").val(""); // Clear the password field
+  cleanFilter()
 });
 
 $("#loginAccount").on("submit", function (event) {
   event.preventDefault();
   let usernameLogin = $("#usernameLogin").val();
-  let passwordLogin = $("#passwordLogin").val(); // Get the password from the form
+  let passwordLogin = $("#passwordLogin").val();
+  //function to hash the password before check in the log in
   hashPassword(passwordLogin).then(hash => {
     console.log(hash);
   });
+
   if (usernameLogin.trim()) {
     const URL = `http://localhost:3000/api/usersLogin`;
 
@@ -46,16 +48,19 @@ $("#loginAccount").on("submit", function (event) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }), // Send the password to the server
+        body: JSON.stringify({ username, password }), 
       });
   
       const data = await response.json();
-      console.log(data);
+      if(data.message){
+        alert(data.message)
+      }else{
+        alert('welcome '+ data.username)
+      }
       return data;
     };
     loginAccount(usernameLogin , passwordLogin);
-    $("#usernameLogin").val("");
-    $("#passwordLogin").val(""); // Clear the password field
+    cleanFilter()
   } else {
     alert("Please enter a usernameLogin");
   }
@@ -63,13 +68,29 @@ $("#loginAccount").on("submit", function (event) {
 
 // show all accounts
 
-$("#all-accounts").on("click", function () {
+$("#all-accounts").on("click", async function () {
   const URL = `http://localhost:3000/api/users`;
   const getAccounts = async () => {
     const response = await fetch(URL);
     const data = await response.json();
-    console.log(data);
     return data;
   };
-  getAccounts();
+  addUsersToScreen(await getAccounts());
 });
+const addUsersToScreen = (data) =>
+{
+  $('#users').html('')
+  data.forEach(element => {
+    console.log(element)
+    $('#users').append(`<code>{
+      userId: ${element.userId},
+      username: ${element.username},
+      password: ${element.password}
+    }
+      </code><br>`)
+  });
+}
+const cleanFilter = () =>{
+  $("#usernameLogin").val("");
+  $("#passwordLogin").val(""); 
+}

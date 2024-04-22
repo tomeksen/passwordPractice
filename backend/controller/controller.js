@@ -4,7 +4,12 @@ import {cryptPassword, comparePassword} from '../utils/encryptPass.js'
 const validateUser = (username) => {
   return User.getUsers().find((user) => user.username === username);
 };
-
+const hashPassword = (password) => {
+  cryptPassword(password, (err, hash) => {
+    password = hash
+  });
+  return password
+};
 // Users
 export const getUsers = (req, res) => {
   const result = User.getUsers();
@@ -48,10 +53,11 @@ export const addUser = (req, res) => {
 
 export const loginUser = (req, res) => {
   const username = req.body.username;
-  const password = req.body.password;
+  let password = req.body.password;
+ 
   const user = validateUser(username);
   if (user && user.password) {
-    comparePassword(password, user.password, (err, isMatch) => {
+    comparePassword(hashPassword(password), user.password, (err, isMatch) => {
       if (err) {
         return res.status(400).json({ message: "Error logging in" });
       }
@@ -65,3 +71,4 @@ export const loginUser = (req, res) => {
     res.status(400).json({ message: "Error logging in" });
   }
 }
+
