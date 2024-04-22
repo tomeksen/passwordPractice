@@ -84,8 +84,8 @@ const addUsersToScreen = (data) =>
     console.log(element)
     $('#users').append(`<code>{
       userId: ${element.userId},
-      username: ${element.username},
-      password: ${element.password}
+      username: '${element.username}',
+      password: '${element.password}'
     }
       </code><br>`)
   });
