@@ -7,7 +7,7 @@ $("#add-account").on("submit", function (event) {
   let password = $("#password").val(); 
   // hashing the password to add it in the register
   hashPassword(password).then(hash => {
-    console.log(hash);
+    password = hash;
   });
 
   const URL = `http://localhost:3000/api/users`;

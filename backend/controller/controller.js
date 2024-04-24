@@ -56,8 +56,8 @@ export const loginUser = (req, res) => {
   let password = req.body.password;
  
   const user = validateUser(username);
-  if (user && user.password) {
-    comparePassword(hashPassword(password), user.password, (err, isMatch) => {
+  if (user && user.getPassword()) {
+    comparePassword(hashPassword(password), user.getPassword(), (err, isMatch) => {
       if (err) {
         return res.status(400).json({ message: "Error logging in" });
       }
